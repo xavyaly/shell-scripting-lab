@@ -1,6 +1,6 @@
 Here are some sample shell scripts for automating file backups:
 
-### 1. Simple Backup Script
+1. Simple Backup Script
 This script backs up files from a source directory to a destination directory with a timestamp.
 
 ```bash
@@ -21,7 +21,7 @@ cp -r "$SOURCE_DIR"/* "$BACKUP_DIR"
 echo "Backup completed successfully at $BACKUP_DIR"
 ```
 
-### 2. Backup with Compression
+2. Backup with Compression
 This script compresses the backup into a `.tar.gz` archive for efficient storage.
 
 ```bash
@@ -38,7 +38,7 @@ tar -czf "$DEST_DIR/backup_$DATE.tar.gz" -C "$SOURCE_DIR" .
 echo "Backup with compression completed: $DEST_DIR/backup_$DATE.tar.gz"
 ```
 
-### 3. Incremental Backup Using `rsync`
+3. Incremental Backup Using `rsync`
 Incremental backups only copy new or modified files. This is ideal for large directories with minimal changes.
 
 ```bash
@@ -55,7 +55,7 @@ rsync -av --delete "$SOURCE_DIR"/ "$DEST_DIR"/"$DATE"
 echo "Incremental backup completed successfully to $DEST_DIR/$DATE"
 ```
 
-### 4. Rotating Backups (Daily/Weekly/Monthly)
+4. Rotating Backups (Daily/Weekly/Monthly)
 This script keeps a daily, weekly, and monthly backup, rotating them to avoid using too much storage.
 
 ```bash
@@ -88,7 +88,7 @@ fi
 echo "Rotating backups completed."
 ```
 
-### 5. Full and Differential Backup
+5. Full and Differential Backup
 This script runs a full backup once a week and differential backups on other days.
 
 ```bash
@@ -117,7 +117,7 @@ else
 fi
 ```
 
-### Setting Up a Cron Job for Automation
+Setting Up a Cron Job for Automation
 To automate any of these scripts, add them to your crontab:
 
 1. Open the crontab editor:
