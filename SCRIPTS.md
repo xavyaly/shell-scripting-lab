@@ -870,3 +870,99 @@ This script streamlines software installations, ensures required software is ins
 
 ----------------------------------------------------------------------------------------------------------------
 
+'''NETORK CONNECTIVITY CHECKER'''
+
+Here’s a shell script that checks network connectivity to a list of servers or IP addresses. The script pings each host, logs the results, and provides a summary.
+
+Network Connectivity Checker Script
+
+This script:
+- Accepts a list of IP addresses or domain names.
+- Pings each host to check connectivity.
+- Logs success or failure for each ping.
+- Provides a summary at the end.
+
+```bash
+#!/bin/bash
+
+# List of hosts to check connectivity for
+HOSTS=("8.8.8.8" "8.8.4.4" "google.com" "yahoo.com")
+
+# Log file
+LOG_FILE="connectivity_log.txt"
+
+# Clear the previous log file
+> "$LOG_FILE"
+
+# Function to check connectivity for a host
+check_connectivity() {
+    local HOST=$1
+    echo "Checking connectivity for $HOST..." | tee -a "$LOG_FILE"
+    
+    if ping -c 1 "$HOST" &> /dev/null; then
+        echo "$HOST is reachable." | tee -a "$LOG_FILE"
+        return 0
+    else
+        echo "$HOST is not reachable." | tee -a "$LOG_FILE"
+        return 1
+    fi
+}
+
+# Counters for summary
+SUCCESS_COUNT=0
+FAILURE_COUNT=0
+
+# Check connectivity for each host
+for HOST in "${HOSTS[@]}"; do
+    if check_connectivity "$HOST"; then
+        SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+    else
+        FAILURE_COUNT=$((FAILURE_COUNT + 1))
+    fi
+done
+
+# Summary
+echo "---------------------------------" | tee -a "$LOG_FILE"
+echo "Connectivity Check Summary:" | tee -a "$LOG_FILE"
+echo "Reachable Hosts: $SUCCESS_COUNT" | tee -a "$LOG_FILE"
+echo "Unreachable Hosts: $FAILURE_COUNT" | tee -a "$LOG_FILE"
+echo "Detailed log is saved in $LOG_FILE."
+```
+
+Explanation of the Script
+
+1. Define Host List:
+   - The `HOSTS` array contains IP addresses or domain names you want to check. Add or remove hosts as needed.
+
+2. Log File Setup:
+   - Logs results in `connectivity_log.txt`, and clears the log file at the start of each run.
+
+3. Connectivity Check Function (`check_connectivity`):
+   - Uses `ping` with `-c 1` to send a single ping to each host.
+   - Logs whether the host is reachable or not, based on the ping response.
+
+4. Counters for Summary:
+   - Tracks the number of successful and failed pings, providing a summary at the end.
+
+5. Loop Through Hosts:
+   - Calls `check_connectivity` for each host, updating counters and logging results.
+
+Running the Script
+
+1. Save the script to a file, e.g., `network_checker.sh`.
+2. Make it executable:
+
+   ```bash
+   chmod +x network_checker.sh
+   ```
+
+3. Run the script:
+
+   ```bash
+   ./network_checker.sh
+   ```
+
+This script is a quick and useful way to test network connectivity to a list of hosts, providing an immediate overview and a log of the results.
+
+----------------------------------------------------------------------------------------------------------------
+
