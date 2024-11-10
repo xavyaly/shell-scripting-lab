@@ -1073,3 +1073,104 @@ To use the `mail` command:
 This script is a straightforward way to keep track of website uptime and receive immediate alerts if any monitored sites go down.
 
 ----------------------------------------------------------------------------------------------------------------
+
+'''DATA CLEANUP'''
+
+Here’s a data cleanup shell script designed to remove temporary files, log files over a specified age, and unused files in specific directories. It’s flexible and can be adapted to target different file types or age thresholds as needed.
+
+Data Cleanup Script
+
+This script:
+- Cleans up old log files and temporary files.
+- Deletes files over a certain age.
+- Can be scheduled with `cron` for regular cleanups.
+
+```bash
+#!/bin/bash
+
+# Directories to clean
+TEMP_DIR="/tmp"
+LOG_DIR="/var/log"
+DOWNLOADS_DIR="$HOME/Downloads"
+
+# Age threshold for cleanup (in days)
+AGE=30
+
+# Log file for cleanup actions
+CLEANUP_LOG="cleanup_log.txt"
+
+# Start cleanup log
+echo "Data Cleanup - $(date)" >> "$CLEANUP_LOG"
+
+# Function to delete old files
+cleanup_old_files() {
+    local DIR=$1
+    local AGE=$2
+    echo "Cleaning up files older than $AGE days in $DIR..." | tee -a "$CLEANUP_LOG"
+
+    # Find and delete files older than specified age
+    find "$DIR" -type f -mtime +$AGE -exec rm -v {} \; | tee -a "$CLEANUP_LOG"
+}
+
+# Clean up temporary files in /tmp
+cleanup_old_files "$TEMP_DIR" "$AGE"
+
+# Clean up old logs in /var/log
+cleanup_old_files "$LOG_DIR" "$AGE"
+
+# Clean up old files in Downloads
+cleanup_old_files "$DOWNLOADS_DIR" "$AGE"
+
+echo "Cleanup completed. Check $CLEANUP_LOG for details."
+```
+
+Explanation of the Script
+
+1. Define Directories and Age Threshold:
+   - `TEMP_DIR`, `LOG_DIR`, and `DOWNLOADS_DIR` specify the directories to clean. Modify or add directories as needed.
+   - `AGE` sets the age threshold in days; files older than this will be deleted.
+
+2. Log File Setup:
+   - Logs all cleanup actions and timestamps to `cleanup_log.txt`.
+
+3. Cleanup Function (`cleanup_old_files`):
+   - Uses `find` to locate files older than the specified age and deletes them with `rm -v` to log details.
+   - The `-mtime +$AGE` option in `find` matches files older than the specified days.
+
+4. Run Cleanup for Each Directory:
+   - Calls `cleanup_old_files` for each specified directory, passing in the age threshold.
+
+Running the Script
+
+1. Save the script to a file, e.g., `data_cleanup.sh`.
+2. Make it executable:
+
+   ```bash
+   chmod +x data_cleanup.sh
+   ```
+
+3. Run the script:
+
+   ```bash
+   ./data_cleanup.sh
+   ```
+
+Scheduling Regular Cleanups with `cron`
+
+To automate the script, schedule it with `cron`:
+
+1. Open the `crontab` editor:
+
+   ```bash
+   crontab -e
+   ```
+
+2. Add a line to run the script daily at midnight (or adjust as needed):
+
+   ```bash
+   0 0 * * * /path/to/data_cleanup.sh
+   ```
+
+This script offers a quick way to keep your system tidy, removing old files and freeing up space.
+
+----------------------------------------------------------------------------------------------------------------
