@@ -781,3 +781,92 @@ Running the Script
 This script offers a simple and secure way to encrypt and decrypt files using AES-256 encryption, which is strong and widely used for file protection.
 
 ----------------------------------------------------------------------------------------------------------------
+
+'''AUTOMATED SOFTWARE INSTALLATION'''
+
+Here’s a shell script that automates the installation of commonly used software packages. It checks for package installation, installs missing packages, and logs installation details.
+
+This example script is tailored for Debian-based systems (like Ubuntu), using `apt` for package management. You can modify it for other package managers (like `yum` for CentOS/RHEL or `dnf` for Fedora).
+
+Automated Software Installation Script
+
+This script:
+- Installs a list of specified packages if they’re not already installed.
+- Logs installation status and results.
+- Notifies the user if a package is already installed.
+
+```bash
+#!/bin/bash
+
+# List of packages to install
+PACKAGES=("curl" "git" "vim" "htop" "wget" "docker.io" "nodejs")
+
+# Log file
+LOG_FILE="installation_log.txt"
+
+# Function to install a package
+install_package() {
+    local PACKAGE=$1
+    if dpkg -s "$PACKAGE" &> /dev/null; then
+        echo "$PACKAGE is already installed." | tee -a "$LOG_FILE"
+    else
+        echo "Installing $PACKAGE..."
+        sudo apt-get install -y "$PACKAGE" &>> "$LOG_FILE"
+        if [ $? -eq 0 ]; then
+            echo "$PACKAGE installed successfully." | tee -a "$LOG_FILE"
+        else
+            echo "Failed to install $PACKAGE." | tee -a "$LOG_FILE"
+        fi
+    fi
+}
+
+# Update package list
+echo "Updating package list..."
+sudo apt-get update &>> "$LOG_FILE"
+echo "Package list updated." | tee -a "$LOG_FILE"
+
+# Install each package
+for PACKAGE in "${PACKAGES[@]}"; do
+    install_package "$PACKAGE"
+done
+
+echo "Software installation completed. Check $LOG_FILE for details."
+```
+
+Explanation of the Script
+
+1. Define Package List:
+   - The `PACKAGES` array holds the names of the packages you want to install. Add or remove packages as needed.
+
+2. Log File:
+   - Logs installation progress and results to `installation_log.txt`.
+
+3. Install Package Function (`install_package`):
+   - Checks if a package is already installed using `dpkg -s`.
+   - Installs the package if it’s missing and logs the result.
+
+4. Updating Package List:
+   - Runs `sudo apt-get update` before installations to make sure package sources are up to date.
+
+5. Loop through Packages:
+   - Calls `install_package` for each package in the list, logging whether it’s installed or if installation failed.
+
+Running the Script
+
+1. Save the script to a file, e.g., `install_software.sh`.
+2. Make it executable:
+
+   ```bash
+   chmod +x install_software.sh
+   ```
+
+3. Run the script:
+
+   ```bash
+   ./install_software.sh
+   ```
+
+This script streamlines software installations, ensures required software is installed, and maintains a log for auditing or troubleshooting.
+
+----------------------------------------------------------------------------------------------------------------
+
