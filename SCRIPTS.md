@@ -966,3 +966,110 @@ This script is a quick and useful way to test network connectivity to a list of 
 
 ----------------------------------------------------------------------------------------------------------------
 
+'''WEBSITE UPTIME CHECKER'''
+
+Here’s a shell script to monitor website uptime. It checks if each website in a list is accessible and logs the results. If a website is down, it sends a notification to alert the user.
+
+This example uses `curl` to test each website’s HTTP status and `mail` for sending email notifications (you’ll need to configure `mail` with an SMTP server for email functionality).
+
+Website Uptime Checker Script
+
+This script:
+- Checks the availability of websites.
+- Logs results and timestamps.
+- Sends an email notification if a website is down.
+
+```bash
+#!/bin/bash
+
+# List of websites to monitor
+WEBSITES=("https://www.google.com" "https://www.github.com" "https://www.example.com")
+
+# Log file
+LOG_FILE="uptime_log.txt"
+
+# Email for notifications
+NOTIFICATION_EMAIL="your_email@example.com"
+
+# Function to check website status
+check_website() {
+    local URL=$1
+    echo "Checking $URL..." | tee -a "$LOG_FILE"
+
+    # Perform HTTP request and capture HTTP status code
+    HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" "$URL")
+    
+    # Check if status code indicates success (200 range)
+    if [[ "$HTTP_STATUS" == 2* || "$HTTP_STATUS" == 3* ]]; then
+        echo "$(date): $URL is up. Status code: $HTTP_STATUS" | tee -a "$LOG_FILE"
+    else
+        echo "$(date): $URL is down! Status code: $HTTP_STATUS" | tee -a "$LOG_FILE"
+        send_notification "$URL" "$HTTP_STATUS"
+    fi
+}
+
+# Function to send an email notification
+send_notification() {
+    local URL=$1
+    local STATUS=$2
+    echo "Sending notification email for $URL being down."
+
+    # Prepare email content
+    SUBJECT="Website Down Alert: $URL"
+    MESSAGE="$URL is down. Status code: $STATUS. Checked at $(date)"
+    
+    # Send email
+    echo "$MESSAGE" | mail -s "$SUBJECT" "$NOTIFICATION_EMAIL"
+}
+
+# Main program loop to check each website
+for WEBSITE in "${WEBSITES[@]}"; do
+    check_website "$WEBSITE"
+done
+
+echo "Website uptime check completed. Check $LOG_FILE for details."
+```
+
+Explanation of the Script
+
+1. Define Websites to Monitor:
+   - The `WEBSITES` array lists URLs to check for uptime. Add or remove URLs as needed.
+
+2. Log File Setup:
+   - Logs uptime status and timestamps to `uptime_log.txt`.
+
+3. Website Check Function (`check_website`):
+   - Uses `curl` to make a request and captures the HTTP status code.
+   - If the status code is in the 200 or 300 range (indicating success), it logs that the website is up.
+   - If the status code is outside this range, it logs that the website is down and triggers an email notification.
+
+4. Notification Function (`send_notification`):
+   - Sends an email alert using the `mail` command, including the down website’s URL, status code, and timestamp.
+
+5. Loop Through Websites:
+   - Calls `check_website` for each site in the `WEBSITES` array.
+
+Running the Script
+
+1. Save the script to a file, e.g., `website_uptime_checker.sh`.
+2. Make it executable:
+
+   ```bash
+   chmod +x website_uptime_checker.sh
+   ```
+
+3. Run the script:
+
+   ```bash
+   ./website_uptime_checker.sh
+   ```
+
+Setting Up Email Notifications
+
+To use the `mail` command:
+- Install `mailutils` (for Debian/Ubuntu) or `mailx` (for CentOS/RHEL).
+- Configure your system’s `mail` command with an SMTP server if needed, so it can send emails.
+
+This script is a straightforward way to keep track of website uptime and receive immediate alerts if any monitored sites go down.
+
+----------------------------------------------------------------------------------------------------------------
