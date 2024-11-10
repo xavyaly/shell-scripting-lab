@@ -665,3 +665,119 @@ This script can help quickly generate strong passwords with customizable options
 
 ----------------------------------------------------------------------------------------------------------------
 
+'''FILE ENCRYPTION/DECRYPTION'''
+
+Here’s a shell script that uses `openssl` to encrypt and decrypt files. This script lets you specify the file to encrypt or decrypt and the password for encryption.
+
+File Encryption/Decryption Script
+
+This script provides options for:
+- Encrypting a file.
+- Decrypting a file.
+
+Note: You’ll need `openssl` installed on your system to run this script.
+
+```bash
+#!/bin/bash
+
+# Function to display menu
+display_menu() {
+    echo "File Encryption/Decryption Script"
+    echo "1. Encrypt a File"
+    echo "2. Decrypt a File"
+    echo "3. Exit"
+}
+
+# Function to encrypt a file
+encrypt_file() {
+    read -p "Enter the file to encrypt: " FILE
+    read -sp "Enter password for encryption: " PASSWORD
+    echo ""
+    
+    if [ -f "$FILE" ]; then
+        openssl aes-256-cbc -salt -in "$FILE" -out "$FILE.enc" -k "$PASSWORD"
+        if [ $? -eq 0 ]; then
+            echo "File encrypted successfully as $FILE.enc"
+        else
+            echo "Failed to encrypt the file."
+        fi
+    else
+        echo "File does not exist."
+    fi
+}
+
+# Function to decrypt a file
+decrypt_file() {
+    read -p "Enter the file to decrypt: " FILE
+    read -sp "Enter password for decryption: " PASSWORD
+    echo ""
+    
+    if [ -f "$FILE" ]; then
+        openssl aes-256-cbc -d -in "$FILE" -out "${FILE%.enc}" -k "$PASSWORD"
+        if [ $? -eq 0 ]; then
+            echo "File decrypted successfully as ${FILE%.enc}"
+        else
+            echo "Failed to decrypt the file. Incorrect password or corrupted file."
+        fi
+    else
+        echo "File does not exist."
+    fi
+}
+
+# Main program loop
+while true; do
+    display_menu
+    read -p "Choose an option [1-3]: " OPTION
+
+    case $OPTION in
+        1)
+            encrypt_file
+            ;;
+        2)
+            decrypt_file
+            ;;
+        3)
+            echo "Exiting the script."
+            break
+            ;;
+        *)
+            echo "Invalid option. Please select between 1 and 3."
+            ;;
+    esac
+    echo ""
+done
+```
+
+Explanation of the Script
+
+1. `encrypt_file`:
+   - Prompts for the filename to encrypt and a password.
+   - Uses `openssl aes-256-cbc` to encrypt the file with AES-256 encryption.
+   - Saves the encrypted file as `filename.enc`.
+
+2. `decrypt_file`:
+   - Prompts for the filename to decrypt and the password.
+   - Uses `openssl aes-256-cbc -d` to decrypt the file.
+   - Saves the decrypted file with the original filename (removes `.enc`).
+
+3. Main Loop:
+   - Displays a menu and runs the corresponding function based on user input.
+
+Running the Script
+
+1. Save the script to a file, e.g., `file_encrypt_decrypt.sh`.
+2. Make it executable:
+
+   ```bash
+   chmod +x file_encrypt_decrypt.sh
+   ```
+
+3. Run the script:
+
+   ```bash
+   ./file_encrypt_decrypt.sh
+   ```
+
+This script offers a simple and secure way to encrypt and decrypt files using AES-256 encryption, which is strong and widely used for file protection.
+
+----------------------------------------------------------------------------------------------------------------
